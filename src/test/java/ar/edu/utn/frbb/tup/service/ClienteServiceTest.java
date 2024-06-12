@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -23,7 +25,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ClienteServiceTest {
-
+   
     @Mock
     private ClienteDao clienteDao;
 
@@ -128,4 +130,97 @@ public class ClienteServiceTest {
     //Agregar una CA$ y CC$ --> success 2 cuentas, titular peperino
     //Agregar una CA$ y CAU$S --> success 2 cuentas, titular peperino...
     //Testear clienteService.buscarPorDni
+
+@Test
+public void testAgregarCAYCCSuccess() throws TipoCuentaAlreadyExistsException {
+    Cliente pepeRino = new Cliente();
+    pepeRino.setDni(26456440);
+    pepeRino.setNombre("Pepe");
+    pepeRino.setApellido("Rino");
+    pepeRino.setFechaNacimiento(LocalDate.of(1978, 3,25));
+    pepeRino.setTipoPersona(TipoPersona.PERSONA_FISICA);
+
+    Cuenta cuentaCA = new Cuenta()
+            .setMoneda(TipoMoneda.PESOS)
+            .setBalance(100000)
+            .setTipoCuenta(TipoCuenta.CAJA_AHORRO);
+
+    Cuenta cuentaCC = new Cuenta()
+            .setMoneda(TipoMoneda.PESOS)
+            .setBalance(200000)
+            .setTipoCuenta(TipoCuenta.CUENTA_CORRIENTE);
+
+    when(clienteDao.find(26456440, true)).thenReturn(pepeRino);
+
+    clienteService.agregarCuenta(cuentaCA, pepeRino.getDni());
+    clienteService.agregarCuenta(cuentaCC, pepeRino.getDni());
+
+    verify(clienteDao, times(2)).save(pepeRino);
+
+    assertEquals(2, pepeRino.getCuentas().size());
+    assertTrue(pepeRino.getCuentas().contains(cuentaCA));
+    assertTrue(pepeRino.getCuentas().contains(cuentaCC));
+    assertEquals(pepeRino, cuentaCA.getTitular());
+    assertEquals(pepeRino, cuentaCC.getTitular());
 }
+
+@Test
+public void testAgregarCAYCAUSDSuccess() throws TipoCuentaAlreadyExistsException {
+    Cliente pepeRino = new Cliente();
+    pepeRino.setDni(26456441);
+    pepeRino.setNombre("Pepe");
+    pepeRino.setApellido("Rino");
+    pepeRino.setFechaNacimiento(LocalDate.of(1978, 3,25));
+    pepeRino.setTipoPersona(TipoPersona.PERSONA_FISICA);
+
+    Cuenta cuentaCA = new Cuenta()
+            .setMoneda(TipoMoneda.PESOS)
+            .setBalance(100000)
+            .setTipoCuenta(TipoCuenta.CAJA_AHORRO);
+
+    Cuenta cuentaCAUSD = new Cuenta()
+            .setMoneda(TipoMoneda.DOLARES)
+            .setBalance(3000)
+            .setTipoCuenta(TipoCuenta.CAJA_AHORRO);
+
+    when(clienteDao.find(26456441, true)).thenReturn(pepeRino);
+
+    clienteService.agregarCuenta(cuentaCA, pepeRino.getDni());
+    clienteService.agregarCuenta(cuentaCAUSD, pepeRino.getDni());
+
+    verify(clienteDao, times(2)).save(pepeRino);
+
+    assertEquals(2, pepeRino.getCuentas().size());
+    assertTrue(pepeRino.getCuentas().contains(cuentaCA));
+    assertTrue(pepeRino.getCuentas().contains(cuentaCAUSD));
+    assertEquals(pepeRino, cuentaCA.getTitular());
+    assertEquals(pepeRino, cuentaCAUSD.getTitular());
+}
+
+@Test
+public void testBuscarPorDniCasoExito() {
+    Cliente pepeRino = new Cliente();
+    pepeRino.setDni(26456437);
+    pepeRino.setNombre("Pepe");
+    pepeRino.setApellido("Rino");
+    pepeRino.setFechaNacimiento(LocalDate.of(1978, 3,25));
+    pepeRino.setTipoPersona(TipoPersona.PERSONA_FISICA);
+
+    when(clienteDao.find(26456437, true)).thenReturn(pepeRino);
+
+    Cliente found = clienteService.buscarClientePorDni(26456437);
+
+    assertNotNull(found);
+    assertEquals(pepeRino, found);
+}
+
+@Test
+public void testBuscarPorDniCasoFalla() {
+    when(clienteDao.find(12345678, true)).thenReturn(null);
+
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        clienteService.buscarClientePorDni(12345678);
+    });
+
+    assertEquals("El cliente no existe", exception.getMessage());
+}}
