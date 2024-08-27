@@ -1,6 +1,11 @@
 package ar.edu.utn.frbb.tup.service;
 
-import ar.edu.utn.frbb.tup.model.*;
+import ar.edu.utn.frbb.tup.controller.ClienteDto;
+import ar.edu.utn.frbb.tup.model.Cliente;
+import ar.edu.utn.frbb.tup.model.Cuenta;
+import ar.edu.utn.frbb.tup.model.TipoCuenta;
+import ar.edu.utn.frbb.tup.model.TipoMoneda;
+import ar.edu.utn.frbb.tup.model.TipoPersona;
 import ar.edu.utn.frbb.tup.model.exception.ClienteAlreadyExistsException;
 import ar.edu.utn.frbb.tup.model.exception.TipoCuentaAlreadyExistsException;
 import ar.edu.utn.frbb.tup.persistence.ClienteDao;
@@ -17,9 +22,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -39,30 +46,30 @@ public class ClienteServiceTest {
 
     @Test
     public void testClienteMenor18Años() {
-        Cliente clienteMenorDeEdad = new Cliente();
-        clienteMenorDeEdad.setFechaNacimiento(LocalDate.of(2020, 2, 7));
+        ClienteDto clienteMenorDeEdad = new ClienteDto();
+        clienteMenorDeEdad.setFechaNacimiento("2020-03-18");
         assertThrows(IllegalArgumentException.class, () -> clienteService.darDeAltaCliente(clienteMenorDeEdad));
     }
 
     @Test
     public void testClienteSuccess() throws ClienteAlreadyExistsException {
-        Cliente cliente = new Cliente();
-        cliente.setFechaNacimiento(LocalDate.of(1978,3,25));
+        ClienteDto cliente = new ClienteDto();
+        cliente.setFechaNacimiento("1978-03-18");
         cliente.setDni(29857643);
-        cliente.setTipoPersona(TipoPersona.PERSONA_FISICA);
-        clienteService.darDeAltaCliente(cliente);
+        cliente.setTipoPersona(TipoPersona.PERSONA_FISICA.toString());
+        Cliente clienteEntity = clienteService.darDeAltaCliente(cliente);
 
-        verify(clienteDao, times(1)).save(cliente);
+        verify(clienteDao, times(1)).save(clienteEntity);
     }
 
     @Test
     public void testClienteAlreadyExistsException() throws ClienteAlreadyExistsException {
-        Cliente pepeRino = new Cliente();
+        ClienteDto pepeRino = new ClienteDto();
         pepeRino.setDni(26456437);
         pepeRino.setNombre("Pepe");
         pepeRino.setApellido("Rino");
-        pepeRino.setFechaNacimiento(LocalDate.of(1978, 3,25));
-        pepeRino.setTipoPersona(TipoPersona.PERSONA_FISICA);
+        pepeRino.setFechaNacimiento("1978-03-18");
+        pepeRino.setTipoPersona(TipoPersona.PERSONA_FISICA.toString());
 
         when(clienteDao.find(26456437, false)).thenReturn(new Cliente());
 
