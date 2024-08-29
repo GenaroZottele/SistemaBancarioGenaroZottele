@@ -1,4 +1,4 @@
-package ar.edu.utn.frbb.tup.controller.handler;
+package ar.edu.utn.frbb.tup.presentation.handler;
 
 import ar.edu.utn.frbb.tup.model.exception.TipoCuentaAlreadyExistsException;
 import org.springframework.http.HttpHeaders;

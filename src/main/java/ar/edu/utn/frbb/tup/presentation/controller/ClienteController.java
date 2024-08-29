@@ -1,6 +1,7 @@
-package ar.edu.utn.frbb.tup.controller;
+package ar.edu.utn.frbb.tup.presentation.controller;
 
-import ar.edu.utn.frbb.tup.controller.validator.ClienteValidator;
+import ar.edu.utn.frbb.tup.presentation.dto.ClienteDto;
+import ar.edu.utn.frbb.tup.presentation.validator.ClienteValidator;
 import ar.edu.utn.frbb.tup.model.Cliente;
 import ar.edu.utn.frbb.tup.model.exception.ClienteAlreadyExistsException;
 import ar.edu.utn.frbb.tup.service.ClienteService;

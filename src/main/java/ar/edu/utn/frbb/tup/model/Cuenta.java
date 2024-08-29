@@ -1,18 +1,33 @@
 package ar.edu.utn.frbb.tup.model;
 
+import ar.edu.utn.frbb.tup.model.exception.CantidadNegativaException;
+import ar.edu.utn.frbb.tup.model.exception.NoAlcanzaException;
+import ar.edu.utn.frbb.tup.presentation.dto.CuentaDto;
+
 import java.time.LocalDateTime;
 import java.util.Random;
 
 public class Cuenta {
-    private long numeroCuenta;
-    LocalDateTime fechaCreacion;
-    int balance;
-    TipoCuenta tipoCuenta;
-    Cliente titular;
-    TipoMoneda moneda;
+    private Cliente titular;
+    private Cliente dni;
+    private long CVU;
+    private LocalDateTime fechaCreacion;
+    private int balance;
+    private TipoCuenta tipoCuenta;
+    private TipoMoneda moneda;
 
     public Cuenta() {
-        this.numeroCuenta = new Random().nextLong();
+        this.CVU = new Random().nextLong();// TESTEAR si anda
+        this.balance = 0;
+        this.fechaCreacion = LocalDateTime.now();
+    }
+
+    public Cuenta(CuentaDto cuentaDto) {
+        this.titular = new Cliente(cuentaDto.getTitular());
+        this.dni = new Cliente(cuentaDto.getDni());
+        this.tipoCuenta = TipoCuenta.valueOf(cuentaDto.getTipoCuenta());
+        this.moneda = TipoMoneda.valueOf(cuentaDto.getMoneda());
+        this.CVU = new Random().nextLong();// TESTEAR si anda
         this.balance = 0;
         this.fechaCreacion = LocalDateTime.now();
     }
@@ -74,16 +89,16 @@ public class Cuenta {
         this.balance = this.balance - cantidadADebitar;
     }
 
-    public void setNumeroCuenta(long numeroCuenta) {
-        this.numeroCuenta = numeroCuenta;
+    public void setCVU(long CVU) {
+        this.CVU = CVU;
     }
 
     public void forzaDebitoDeCuenta(int i) {
         this.balance = this.balance - i;
     }
 
-    public long getNumeroCuenta() {
-        return numeroCuenta;
+    public long getCVU() {
+        return CVU;
     }
 
 

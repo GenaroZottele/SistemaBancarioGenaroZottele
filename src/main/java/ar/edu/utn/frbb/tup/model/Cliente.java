@@ -1,6 +1,6 @@
 package ar.edu.utn.frbb.tup.model;
 
-import ar.edu.utn.frbb.tup.controller.ClienteDto;
+import ar.edu.utn.frbb.tup.presentation.dto.ClienteDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class Cliente extends Persona{
         super();
     }
     public Cliente(ClienteDto clienteDto) {
-        super(clienteDto.getDni(), clienteDto.getApellido(), clienteDto.getNombre(), clienteDto.getFechaNacimiento());
+        super(clienteDto.getDni(), clienteDto.getApellido(), clienteDto.getNombre(), clienteDto.getFechaNacimiento(), clienteDto.getDireccion());
         fechaAlta = LocalDate.now();
         banco = clienteDto.getBanco();
     }
@@ -50,30 +50,36 @@ public class Cliente extends Persona{
 
     public Set<Cuenta> getCuentas() {
         return cuentas;
+    } //TODO: ver si se puede cambiar a List
+
+    public void setCuentas(Set<Cuenta> cuentas) {
+        this.cuentas = cuentas;
     }
 
     public void addCuenta(Cuenta cuenta) {
         this.cuentas.add(cuenta);
-        cuenta.setTitular(this);
+        cuenta.setTitular(this); //TODO: ver si se puede hacer en el constructor
     }
 
-    public boolean tieneCuenta(TipoCuenta tipoCuenta, TipoMoneda moneda) {
-        for (Cuenta cuenta:
-                cuentas) {
-            if (tipoCuenta.equals(cuenta.getTipoCuenta()) && moneda.equals(cuenta.getMoneda())) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean tieneCuenta(TipoCuenta tipoCuenta, TipoMoneda moneda) {
+//        for (Cuenta cuenta:
+//                cuentas) {
+//            if (tipoCuenta.equals(cuenta.getTipoCuenta()) && moneda.equals(cuenta.getMoneda())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    } ver si se puede trasladar a la capa de servicio
 
     @Override
     public String toString() {
-        return "Cliente{" +
-                "tipoPersona=" + tipoPersona +
-                ", banco='" + banco + '\'' +
-                ", fechaAlta=" + fechaAlta +
-                ", cuentas=" + cuentas +
-                '}';
+        return "\n ///// Cliente ///// \n" +
+                " dni: " + getDni() +
+                "\n nombre: " + getNombre() +
+                "\n apellido: " + getApellido() +
+                "\n tipoPersona: " + getTipoPersona() +
+                "\n banco: " + getBanco() +
+                "\n fechaAlta: " + getFechaAlta() +
+                "\n cuentas: " + getCuentas();
     }
 }
