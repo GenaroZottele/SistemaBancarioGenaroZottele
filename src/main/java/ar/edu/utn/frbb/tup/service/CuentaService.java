@@ -28,8 +28,8 @@ public class CuentaService {
     }
 
     public void darDeAltaCuenta(Cuenta cuenta, long dniTitular) throws CuentaAlreadyExistsException, TipoCuentaAlreadyExistsException, TipoCuentaNotSupportedException {
-        if (cuentaDao.find(cuenta.getNumeroCuenta()) != null) {
-            throw new CuentaAlreadyExistsException("La cuenta " + cuenta.getNumeroCuenta() + " ya existe.");
+        if (cuentaDao.find(cuenta.getCVU()) != null) {
+            throw new CuentaAlreadyExistsException("La cuenta " + cuenta.getCVU() + " ya existe.");
         }
 
         if (!tipoDeCuentaSoportada(cuenta)) {

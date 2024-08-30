@@ -61,15 +61,15 @@ public class Cliente extends Persona{
         cuenta.setTitular(this); //TODO: ver si se puede hacer en el constructor
     }
 
-//    public boolean tieneCuenta(TipoCuenta tipoCuenta, TipoMoneda moneda) {
-//        for (Cuenta cuenta:
-//                cuentas) {
-//            if (tipoCuenta.equals(cuenta.getTipoCuenta()) && moneda.equals(cuenta.getMoneda())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    } ver si se puede trasladar a la capa de servicio
+    public boolean tieneCuenta(TipoCuenta tipoCuenta, TipoMoneda moneda) {
+        for (Cuenta cuenta:
+                cuentas) {
+            if (tipoCuenta.equals(cuenta.getTipoCuenta()) && moneda.equals(cuenta.getMoneda())) {
+                return true;
+            }
+        }
+        return false;
+    }// ver si se puede trasladar a la capa de servicio
 
     @Override
     public String toString() {

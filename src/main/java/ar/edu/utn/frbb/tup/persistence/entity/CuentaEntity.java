@@ -13,10 +13,10 @@ public class CuentaEntity extends BaseEntity{
     int balance;
     String tipoCuenta;
     Long titular;
-    long numeroCuenta;
+    long CVU;
 
     public CuentaEntity(Cuenta cuenta) {
-        super(cuenta.getNumeroCuenta());
+        super(cuenta.getCVU());
         this.balance = cuenta.getBalance();
         this.tipoCuenta = cuenta.getTipoCuenta().toString();
         this.titular = cuenta.getTitular().getDni();
@@ -26,7 +26,7 @@ public class CuentaEntity extends BaseEntity{
     public Cuenta toCuenta() {
         Cuenta cuenta = new Cuenta();
         cuenta.setBalance(this.balance);
-        cuenta.setNumeroCuenta(this.numeroCuenta);
+        cuenta.setCVU(this.CVU);
         cuenta.setTipoCuenta(TipoCuenta.valueOf(this.tipoCuenta));
         cuenta.setFechaCreacion(this.fechaCreacion);
         return cuenta;
@@ -72,11 +72,11 @@ public class CuentaEntity extends BaseEntity{
         this.titular = titular;
     }
 
-    public long getNumeroCuenta() {
-        return numeroCuenta;
+    public long getCVU() {
+        return CVU;
     }
 
-    public void setNumeroCuenta(long numeroCuenta) {
-        this.numeroCuenta = numeroCuenta;
+    public void setCVU(long CVU) {
+        this.CVU = CVU;
     }
 }

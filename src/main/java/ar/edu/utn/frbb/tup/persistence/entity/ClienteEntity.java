@@ -29,7 +29,7 @@ public class ClienteEntity extends BaseEntity {
         this.cuentas = new ArrayList<>();
         if (cliente.getCuentas() != null && !cliente.getCuentas().isEmpty()) {
             for (Cuenta c: cliente.getCuentas()) {
-                cuentas.add(c.getNumeroCuenta());
+                cuentas.add(c.getCVU());
             }
         }
     }
