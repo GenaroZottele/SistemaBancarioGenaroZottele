@@ -1,0 +1,5 @@
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@6b4d8289
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@5a9764c6
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@10c846b
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@5df1b6d5
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@2bf794e

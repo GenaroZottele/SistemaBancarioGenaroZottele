@@ -3,20 +3,19 @@ package ar.edu.utn.frbb.tup.presentation.validator;
 import ar.edu.utn.frbb.tup.presentation.dto.ClienteDto;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-
 @Component
 public class ClienteValidator {
 
-
     public void validate(ClienteDto clienteDto) {
-        if (!"F".equals(clienteDto.getTipoPersona()) || !"J".equals(clienteDto.getTipoPersona())) {
+        if (clienteDto.getTipoPersona() == null || !isValidTipoPersona(clienteDto.getTipoPersona())) {
             throw new IllegalArgumentException("El tipo de persona no es correcto");
         }
-        try {
-            LocalDate.parse(clienteDto.getFechaNacimiento());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error en el formato de fecha");
-        }
+
+
+        // Add other validations as needed
+    }
+
+    private boolean isValidTipoPersona(String tipoPersona) {
+        return "F".equalsIgnoreCase(tipoPersona) || "J".equalsIgnoreCase(tipoPersona);
     }
 }

@@ -1,9 +1,11 @@
 package ar.edu.utn.frbb.tup.service;
 
+import ar.edu.utn.frbb.tup.persistence.TransferDao;
 import ar.edu.utn.frbb.tup.persistence.entity.TransferEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TransferService {
@@ -23,5 +25,14 @@ public class TransferService {
         // transferRepository.save(transfer);
 
         return transfer;
+    }
+
+    public List<TransferEntity> getMovements(Long CVU) {
+        // Implement the logic to retrieve the movements of an account
+        // Get the movements from the database (pseudo-code)
+        TransferDao transfer = new TransferDao();
+        transfer.find(CVU);
+        // return transferRepository.findByCVU(CVU);
+        return null;
     }
 }

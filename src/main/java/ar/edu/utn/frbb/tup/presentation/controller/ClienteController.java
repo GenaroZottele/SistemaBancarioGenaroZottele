@@ -21,7 +21,6 @@ public class ClienteController {
     @Autowired
     private ClienteValidator clienteValidator;
 
-
     @PostMapping
     public Cliente crearCliente(@RequestBody ClienteDto clienteDto) throws ClienteAlreadyExistsException {
         clienteValidator.validate(clienteDto);
