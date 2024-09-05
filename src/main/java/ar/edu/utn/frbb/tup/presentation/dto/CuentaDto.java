@@ -1,5 +1,7 @@
 package ar.edu.utn.frbb.tup.presentation.dto;
 
+import ar.edu.utn.frbb.tup.model.Cuenta;
+
 public class CuentaDto {
     private ClienteDto titular;
     private ClienteDto dni;

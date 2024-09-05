@@ -1,5 +1,7 @@
 package ar.edu.utn.frbb.tup.presentation.dto;
 
+import ar.edu.utn.frbb.tup.model.TipoPersona;
+
 import java.time.LocalDate;
 
 public class PersonaDto {
@@ -7,7 +9,6 @@ public class PersonaDto {
     private String apellido;
     private long dni;
     private String fechaNacimiento;
-    private String direccion;
 
     public String getNombre() {
         return nombre;
@@ -40,8 +41,4 @@ public class PersonaDto {
     public void setFechaNacimiento(String fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
-
-    public String getDireccion() {return direccion;}
-
-    public void setDireccion(String direccion) {this.direccion = direccion;}
 }

@@ -1,6 +1,7 @@
 package ar.edu.utn.frbb.tup.model;
 
 import ar.edu.utn.frbb.tup.presentation.dto.ClienteDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,15 +14,17 @@ public class Cliente extends Persona{
     private TipoPersona tipoPersona;
     private String banco;
     private LocalDate fechaAlta;
+    @JsonIgnore // Ignora el atributo en la serialización
     private Set<Cuenta> cuentas = new HashSet<>();
 
     public Cliente() {
         super();
     }
     public Cliente(ClienteDto clienteDto) {
-        super(clienteDto.getDni(), clienteDto.getApellido(), clienteDto.getNombre(), clienteDto.getFechaNacimiento(), clienteDto.getDireccion());
+        super(clienteDto.getDni(), clienteDto.getApellido(), clienteDto.getNombre(), clienteDto.getFechaNacimiento());
         fechaAlta = LocalDate.now();
         banco = clienteDto.getBanco();
+        tipoPersona = TipoPersona.fromString(clienteDto.getTipoPersona());
     }
 
     public TipoPersona getTipoPersona() {
@@ -50,15 +53,11 @@ public class Cliente extends Persona{
 
     public Set<Cuenta> getCuentas() {
         return cuentas;
-    } //TODO: ver si se puede cambiar a List
-
-    public void setCuentas(Set<Cuenta> cuentas) {
-        this.cuentas = cuentas;
     }
 
     public void addCuenta(Cuenta cuenta) {
         this.cuentas.add(cuenta);
-        cuenta.setTitular(this); //TODO: ver si se puede hacer en el constructor
+        cuenta.setTitular(this);
     }
 
     public boolean tieneCuenta(TipoCuenta tipoCuenta, TipoMoneda moneda) {
@@ -69,17 +68,15 @@ public class Cliente extends Persona{
             }
         }
         return false;
-    }// ver si se puede trasladar a la capa de servicio
+    }
 
     @Override
     public String toString() {
-        return "\n ///// Cliente ///// \n" +
-                " dni: " + getDni() +
-                "\n nombre: " + getNombre() +
-                "\n apellido: " + getApellido() +
-                "\n tipoPersona: " + getTipoPersona() +
-                "\n banco: " + getBanco() +
-                "\n fechaAlta: " + getFechaAlta() +
-                "\n cuentas: " + getCuentas();
+        return "Cliente{" +
+                "tipoPersona=" + tipoPersona +
+                ", banco='" + banco + '\'' +
+                ", fechaAlta=" + fechaAlta +
+                ", cuentas=" + cuentas +
+                '}';
     }
 }

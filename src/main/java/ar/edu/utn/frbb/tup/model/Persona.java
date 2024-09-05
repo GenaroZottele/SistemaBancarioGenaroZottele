@@ -8,15 +8,13 @@ public class Persona {
     private String apellido;
     private long dni;
     private LocalDate fechaNacimiento;
-    private String direccion;
 
     public Persona() {}
-    public Persona(long dni, String apellido, String nombre, String fechaNacimiento, String direccion) {
+    public Persona(long dni, String apellido, String nombre, String fechaNacimiento) {
         this.dni = dni;
         this.apellido = apellido;
         this.nombre = nombre;
         this.fechaNacimiento = LocalDate.parse(fechaNacimiento);
-        this.direccion = direccion;
     }
 
     public String getNombre() {
@@ -51,14 +49,9 @@ public class Persona {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public String getDireccion() {return direccion;}
-
-    public void setDireccion(String direccion) {this.direccion = direccion;}
-
     public int getEdad() {
         LocalDate currentDate = LocalDate.now();
         Period agePeriod = Period.between(fechaNacimiento, currentDate);
         return agePeriod.getYears();
     }
 }
-

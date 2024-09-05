@@ -49,4 +49,12 @@ public class ClienteService {
         }
         return cliente;
     }
+
+    public void borrarCliente(long dni) {
+        if (clienteDao.find(dni, false) == null) {
+            throw new IllegalArgumentException("El cliente no existe");
+        }else {
+            clienteDao.delete(dni);
+        }
+    }
 }

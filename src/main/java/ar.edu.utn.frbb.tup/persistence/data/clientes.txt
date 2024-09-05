@@ -3,3 +3,8 @@ ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@5a9764c6
 ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@10c846b
 ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@5df1b6d5
 ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@2bf794e
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@4affc42f
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@4d83d349
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@3ad63c3
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@23f3d3f7
+ar.edu.utn.frbb.tup.persistence.entity.ClienteEntity@736fc43a

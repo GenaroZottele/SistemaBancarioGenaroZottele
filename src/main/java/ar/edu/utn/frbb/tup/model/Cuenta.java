@@ -3,31 +3,21 @@ package ar.edu.utn.frbb.tup.model;
 import ar.edu.utn.frbb.tup.model.exception.CantidadNegativaException;
 import ar.edu.utn.frbb.tup.model.exception.NoAlcanzaException;
 import ar.edu.utn.frbb.tup.presentation.dto.CuentaDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.Random;
 
 public class Cuenta {
-    private Cliente titular;
-    private Cliente dni;
-    private long CVU;
+    private long numeroCuenta;
     private LocalDateTime fechaCreacion;
     private int balance;
     private TipoCuenta tipoCuenta;
+    private Cliente titular;
     private TipoMoneda moneda;
 
     public Cuenta() {
-        this.CVU = new Random().nextLong();// TESTEAR si anda
-        this.balance = 0;
-        this.fechaCreacion = LocalDateTime.now();
-    }
-
-    public Cuenta(CuentaDto cuentaDto) {
-        this.titular = new Cliente(cuentaDto.getTitular());
-        this.dni = new Cliente(cuentaDto.getDni());
-        this.tipoCuenta = TipoCuenta.valueOf(cuentaDto.getTipoCuenta());
-        this.moneda = TipoMoneda.valueOf(cuentaDto.getMoneda());
-        this.CVU = new Random().nextLong();// TESTEAR si anda
+        this.numeroCuenta = new Random().nextLong();
         this.balance = 0;
         this.fechaCreacion = LocalDateTime.now();
     }
@@ -89,17 +79,27 @@ public class Cuenta {
         this.balance = this.balance - cantidadADebitar;
     }
 
-    public void setCVU(long CVU) {
-        this.CVU = CVU;
+    public void setNumeroCuenta(long numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
     }
 
     public void forzaDebitoDeCuenta(int i) {
         this.balance = this.balance - i;
     }
 
-    public long getCVU() {
-        return CVU;
+    public long getNumeroCuenta() {
+        return numeroCuenta;
     }
 
-
+    @Override
+    public String toString() {
+        return "Cuenta{" +
+                "numeroCuenta=" + numeroCuenta +
+                ", fechaCreacion=" + fechaCreacion +
+                ", balance=" + balance +
+                ", tipoCuenta=" + tipoCuenta +
+                ", titular=" + titular +
+                ", moneda=" + moneda +
+                '}';
+    }
 }

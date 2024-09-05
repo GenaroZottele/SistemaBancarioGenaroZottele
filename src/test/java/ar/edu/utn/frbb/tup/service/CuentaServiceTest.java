@@ -38,12 +38,12 @@ public class CuentaServiceTest {
     @Test
     public void testCuentaExistente() throws CuentaAlreadyExistsException, TipoCuentaAlreadyExistsException, TipoCuentaNotSupportedException {
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(1L);
+        cuenta.setCVU(1L);
         cuenta.setTipoCuenta(TipoCuenta.CAJA_AHORRO);
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500000);
 
-        when(cuentaDao.find(1L)).thenReturn(cuenta);
+        when(cuentaDao.findAccount(1L)).thenReturn(cuenta);
 
         assertThrows(CuentaAlreadyExistsException.class, () -> cuentaService.darDeAltaCuenta(cuenta, 12345678));
     }
@@ -51,7 +51,7 @@ public class CuentaServiceTest {
     @Test
     public void testCuentaNoSoportada() throws TipoCuentaNotSupportedException, CuentaAlreadyExistsException, TipoCuentaAlreadyExistsException {
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(2L);
+        cuenta.setCVU(2L);
         cuenta.setTipoCuenta(TipoCuenta.NO_SOPORTADA); 
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500000);
@@ -62,7 +62,7 @@ public class CuentaServiceTest {
     @Test
     public void testClienteYaTieneCuentaDeEseTipo() throws TipoCuentaAlreadyExistsException {
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(3L);
+        cuenta.setCVU(3L);
         cuenta.setTipoCuenta(TipoCuenta.CAJA_AHORRO);
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500000);
@@ -75,17 +75,17 @@ public class CuentaServiceTest {
     @Test
     public void testCuentaCreadaExitosamente() throws CuentaAlreadyExistsException, TipoCuentaAlreadyExistsException, TipoCuentaNotSupportedException {
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(4L);
+        cuenta.setCVU(4L);
         cuenta.setTipoCuenta(TipoCuenta.CAJA_AHORRO);
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500000);
 
-        when(cuentaDao.find(4L)).thenReturn(null);
+        when(cuentaDao.findAccount(4L)).thenReturn(null);
         doNothing().when(clienteService).agregarCuenta(cuenta, 12345678);
 
         cuentaService.darDeAltaCuenta(cuenta, 12345678);
 
-        verify(cuentaDao, times(1)).save(cuenta);
+        verify(cuentaDao, times(1)).saveAccount(cuenta);
         verify(clienteService, times(1)).agregarCuenta(cuenta, 12345678);
     }
 }
