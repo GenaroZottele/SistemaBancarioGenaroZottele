@@ -9,7 +9,12 @@ import ar.edu.utn.frbb.tup.presentation.dto.CuentaDto;
 
 import java.time.LocalDateTime;
 
-public class CuentaEntity extends BaseEntity{
+/**
+ * Representa una cuenta dentro de la capa de persistencia (similar a Cuenta, pero apta para almacenar en la base).
+ * Se encarga de mapear los campos que se usarán para guardar y leer los datos de la cuenta.
+ */
+public class CuentaEntity extends BaseEntity {
+
     private String nombre;
     private LocalDateTime fechaCreacion;
     private int balance;
@@ -18,6 +23,12 @@ public class CuentaEntity extends BaseEntity{
     private long numeroCuenta;
     private String tipoMoneda;
 
+    /**
+     * Constructor que toma un objeto de la capa de negocio (Cuenta) y
+     * lo traduce a un objeto de persistencia (CuentaEntity).
+     *
+     * @param cuenta Objeto de negocio Cuenta a persistir.
+     */
     public CuentaEntity(Cuenta cuenta) {
         super(cuenta.getNumeroCuenta());
         this.balance = cuenta.getBalance();
@@ -28,6 +39,12 @@ public class CuentaEntity extends BaseEntity{
         this.tipoMoneda = cuenta.getMoneda().toString();
     }
 
+    /**
+     * Método que permite reconstruir un objeto de negocio Cuenta
+     * a partir de los datos almacenados en CuentaEntity.
+     *
+     * @return un objeto Cuenta que contiene los datos relevantes.
+     */
     public Cuenta toCuenta() {
         Cuenta cuenta = new Cuenta();
         cuenta.setBalance(this.balance);
@@ -35,10 +52,13 @@ public class CuentaEntity extends BaseEntity{
         cuenta.setTipoCuenta(TipoCuenta.valueOf(this.tipoCuenta));
         cuenta.setFechaCreacion(this.fechaCreacion);
         cuenta.setMoneda(TipoMoneda.valueOf(this.tipoMoneda));
+        // Asigna el DNI del titular en la cuenta para poder relacionarlo con un objeto Cliente a futuro.
         cuenta.setDniTitular(this.titular);
 
         return cuenta;
     }
+
+    // Métodos getters y setters para manipular los campos privados.
 
     public String getNombre() {
         return nombre;

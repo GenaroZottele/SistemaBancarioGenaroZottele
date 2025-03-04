@@ -33,7 +33,6 @@ public abstract class AbstractBaseDao {
 
     /**
      * Guarda (append) una línea de texto en un archivo.
-     * Útil para persistencia rudimentaria en un .txt.
      */
     protected void saveToFile(String filename, String line) {
         try (FileWriter writer = new FileWriter(filename, true)) {

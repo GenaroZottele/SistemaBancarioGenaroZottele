@@ -17,7 +17,6 @@ public class CuentaController {
 
     @Autowired
     private CuentaService cuentaService;
-// Agregar una validacion para cuando se quiere crear una cuenta con los mimso datos
     @PostMapping("/{dni}")
     public Cuenta crearCuenta(@RequestBody Cuenta cuenta, @PathVariable long dni) throws TipoCuentaAlreadyExistsException, CuentaAlreadyExistsException {
         cuentaService.darDeAltaCuenta(cuenta, dni);
