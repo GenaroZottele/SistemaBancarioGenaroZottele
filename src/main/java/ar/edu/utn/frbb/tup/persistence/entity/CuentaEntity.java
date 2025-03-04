@@ -35,6 +35,8 @@ public class CuentaEntity extends BaseEntity{
         cuenta.setTipoCuenta(TipoCuenta.valueOf(this.tipoCuenta));
         cuenta.setFechaCreacion(this.fechaCreacion);
         cuenta.setMoneda(TipoMoneda.valueOf(this.tipoMoneda));
+        cuenta.setDniTitular(this.titular);
+
         return cuenta;
     }
 

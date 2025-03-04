@@ -18,6 +18,23 @@ public class ClienteService {
     }
 
     public Cliente darDeAltaCliente(ClienteDto clienteDto) throws ClienteAlreadyExistsException {
+        
+        if (clienteDto == null) {
+            throw new IllegalArgumentException("El ClienteDto no puede ser nulo");
+        }
+        if (clienteDto.getDni() <= 0) {
+            throw new IllegalArgumentException("El DNI del cliente debe ser mayor a 0");
+        }
+        if (clienteDto.getNombre() == null || clienteDto.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del cliente no puede estar vacío");
+        }
+        if (clienteDto.getApellido() == null || clienteDto.getApellido().trim().isEmpty()) {
+            throw new IllegalArgumentException("El apellido del cliente no puede estar vacío");
+        }
+        if (clienteDto.getFechaNacimiento() == null || clienteDto.getFechaNacimiento().trim().isEmpty()) {
+            throw new IllegalArgumentException("La fecha de nacimiento del cliente no puede estar vacía");
+        }
+        
         Cliente cliente = new Cliente(clienteDto);
 
         if (clienteDao.find(cliente.getDni(), false) != null) {
@@ -33,6 +50,14 @@ public class ClienteService {
     }
 
     public void agregarCuenta(Cuenta cuenta, long dniTitular) throws TipoCuentaAlreadyExistsException {
+        
+        if (cuenta == null) {
+            throw new IllegalArgumentException("La cuenta no puede ser nula");
+        }
+        if (dniTitular <= 0) {
+            throw new IllegalArgumentException("El DNI del titular debe ser mayor a 0");
+        }
+        
         Cliente titular = buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);
         if (titular.tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
@@ -43,6 +68,11 @@ public class ClienteService {
     }
 
     public Cliente buscarClientePorDni(long dni) {
+
+        if (dni <= 0) {
+            throw new IllegalArgumentException("El DNI del cliente debe ser mayor a 0");
+        }
+
         Cliente cliente = clienteDao.find(dni, true);
         if(cliente == null) {
             throw new IllegalArgumentException("El cliente no existe");
@@ -51,6 +81,11 @@ public class ClienteService {
     }
 
     public void borrarCliente(long dni) {
+
+        if (dni <= 0) {
+            throw new IllegalArgumentException("El DNI del cliente debe ser mayor a 0");
+        }
+        
         if (clienteDao.find(dni, false) == null) {
             throw new IllegalArgumentException("El cliente no existe");
         }else {

@@ -12,7 +12,7 @@ public class ClienteValidator {
         }
 
 
-        // Add other validations as needed
+        
     }
 
     private boolean isValidTipoPersona(String tipoPersona) {

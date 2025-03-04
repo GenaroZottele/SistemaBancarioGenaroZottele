@@ -9,13 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/cuenta")
 public class CuentaController {
 
     @Autowired
     private CuentaService cuentaService;
-
+// Agregar una validacion para cuando se quiere crear una cuenta con los mimso datos
     @PostMapping("/{dni}")
     public Cuenta crearCuenta(@RequestBody Cuenta cuenta, @PathVariable long dni) throws TipoCuentaAlreadyExistsException, CuentaAlreadyExistsException {
         cuentaService.darDeAltaCuenta(cuenta, dni);
@@ -45,4 +47,17 @@ public class CuentaController {
             return ResponseEntity.status(500).body("Error al buscar la cuenta: " + e.getMessage());
         }
     }
+    // Endpoint para obtener cuentas por DNI del cliente
+    @GetMapping("/cliente/{dni}")
+    public ResponseEntity<?> getCuentasByCliente(@PathVariable long dni) {
+        try {
+            List<Cuenta> cuentas = cuentaService.getCuentasByCliente(dni);
+            return ResponseEntity.ok(cuentas);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al obtener cuentas del cliente: " + e.getMessage());
+        }
+    }
+
 }

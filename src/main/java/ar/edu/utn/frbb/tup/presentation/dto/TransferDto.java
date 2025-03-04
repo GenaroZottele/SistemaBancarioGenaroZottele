@@ -1,10 +1,12 @@
 package ar.edu.utn.frbb.tup.presentation.dto;
+import ar.edu.utn.frbb.tup.model.TipoMoneda;
 
 public class TransferDto {
     private long origen;
     private long destino;
     private double monto;
     private String descripcion;
+    private TipoMoneda moneda;
 
     public long getOrigen() {
         return origen;
@@ -36,5 +38,13 @@ public class TransferDto {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public TipoMoneda getMoneda() {
+        return moneda;
+    }
+
+    public void setMoneda(TipoMoneda moneda) {
+        this.moneda = moneda;
     }
 }

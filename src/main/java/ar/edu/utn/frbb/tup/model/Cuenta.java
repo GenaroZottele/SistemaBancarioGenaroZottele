@@ -2,8 +2,6 @@ package ar.edu.utn.frbb.tup.model;
 
 import ar.edu.utn.frbb.tup.model.exception.CantidadNegativaException;
 import ar.edu.utn.frbb.tup.model.exception.NoAlcanzaException;
-import ar.edu.utn.frbb.tup.presentation.dto.CuentaDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -15,6 +13,8 @@ public class Cuenta {
     private TipoCuenta tipoCuenta;
     private Cliente titular;
     private TipoMoneda moneda;
+    private Long dniTitular;
+
 
     public Cuenta() {
         this.numeroCuenta = new Random().nextLong();
@@ -91,6 +91,14 @@ public class Cuenta {
         return numeroCuenta;
     }
 
+    public Long getDniTitular() {
+        return dniTitular;
+    }
+
+    public void setDniTitular(Long dniTitular) {
+        this.dniTitular = dniTitular;
+    }
+
     @Override
     public String toString() {
         return "Cuenta{" +
@@ -100,6 +108,7 @@ public class Cuenta {
                 ", tipoCuenta=" + tipoCuenta +
                 ", titular=" + titular +
                 ", moneda=" + moneda +
+                ", dniTitular=" + dniTitular +
                 '}';
     }
 }

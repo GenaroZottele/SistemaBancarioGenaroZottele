@@ -20,8 +20,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -132,7 +139,153 @@ public class ClienteServiceTest {
 
     }
 
-    //Agregar una CA$ y CC$ --> success 2 cuentas, titular peperino
-    //Agregar una CA$ y CAU$S --> success 2 cuentas, titular peperino...
-    //Testear clienteService.buscarPorDni
+        @Test
+    public void testBuscarClientePorDni_Existe() {
+        // Configurar mock
+        Cliente mockCliente = new Cliente();
+        mockCliente.setDni(12345678);
+        when(clienteDao.find(12345678L, true)).thenReturn(mockCliente);
+
+        // Llamar al método
+        Cliente resultado = clienteService.buscarClientePorDni(12345678L);
+
+        // Verificar
+        assertNotNull(resultado);
+        assertEquals(12345678, resultado.getDni());
+        verify(clienteDao, times(1)).find(12345678L, true);
+    }
+
+    @Test
+    public void testBuscarClientePorDni_NoExiste() {
+        when(clienteDao.find(99999999L, true)).thenReturn(null);
+
+        // Esperamos que lance IllegalArgumentException
+        Exception e = assertThrows(IllegalArgumentException.class, () -> 
+                clienteService.buscarClientePorDni(99999999L)
+        );
+        assertTrue(e.getMessage().contains("El cliente no existe"));
+    }
+
+    @Test
+    public void testBorrarCliente_Exito() {
+        // El cliente existe en la DB
+        Cliente mockCliente = new Cliente();
+        mockCliente.setDni(55555555);
+        when(clienteDao.find(55555555L, false)).thenReturn(mockCliente);
+
+        // Llamar al método
+        clienteService.borrarCliente(55555555L);
+
+        // Verificar que se llame a delete
+        verify(clienteDao, times(1)).delete(55555555L);
+    }
+
+    @Test
+    public void testBorrarCliente_NoExiste() {
+        // No se encuentra en la DB
+        when(clienteDao.find(77777777L, false)).thenReturn(null);
+
+        // Esperamos que lance excepción
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+                clienteService.borrarCliente(77777777L)
+        );
+        assertTrue(e.getMessage().contains("El cliente no existe"));
+    }
+
+    @Test
+    public void testClienteJusto18Anios() throws ClienteAlreadyExistsException {
+        // Si hoy es 2025-01-01, una persona nacida en 2007-01-01 cumpliría recién 18. 
+        // Ajusta la fecha según tu lógica
+        ClienteDto clienteMayor = new ClienteDto();
+        clienteMayor.setDni(123);
+        clienteMayor.setFechaNacimiento("2005-02-27"); // simula que hoy cumple 20, ajusta la fecha al test real
+
+        // Asumimos no existe
+        when(clienteDao.find(123, false)).thenReturn(null);
+
+        // No debería lanzar excepción si ya tiene >=18
+        assertDoesNotThrow(() -> clienteService.darDeAltaCliente(clienteMayor));
+        verify(clienteDao, times(1)).save(any(Cliente.class));
+    }
+
+    ////////////////////////////////////////
+    // 1) Dar de alta cliente con null
+    ////////////////////////////////////////
+    @Test
+    public void testDarDeAltaCliente_NullDto() {
+        // Si pasamos null como clienteDto, esperamos que lance IllegalArgumentException
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+                clienteService.darDeAltaCliente(null)
+        );
+        assertTrue(e.getMessage().contains("no puede ser nulo")); // Ajustá el mensaje
+        // Verificamos que no se llame a clienteDao
+        verify(clienteDao, never()).save(any());
+    }
+
+    ////////////////////////////////////////
+    // 2) Dar de alta cliente con DNI inválido
+    ////////////////////////////////////////
+    @Test
+    public void testDarDeAltaCliente_DniInvalido() {
+        // Creamos un ClienteDto con DNI <= 0
+        ClienteDto clienteDto = new ClienteDto();
+        clienteDto.setDni(0);
+        clienteDto.setFechaNacimiento("1990-05-10");
+
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+                clienteService.darDeAltaCliente(clienteDto)
+        );
+        assertTrue(e.getMessage().contains("El DNI del cliente debe ser mayor a 0")); 
+        verify(clienteDao, never()).save(any());
+    }
+
+    ////////////////////////////////////////
+    // 3) Dar de alta cliente con nombre vacío
+    ////////////////////////////////////////
+    @Test
+    public void testDarDeAltaCliente_NombreVacio() {
+        // Asumimos que tu lógica chequea nombre / apellido vacíos
+        ClienteDto clienteDto = new ClienteDto();
+        clienteDto.setDni(123456);
+        clienteDto.setNombre("   ");  // nombre vacío
+        clienteDto.setApellido("Rios");
+        clienteDto.setFechaNacimiento("1980-01-01");
+
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+                clienteService.darDeAltaCliente(clienteDto)
+        );
+        assertTrue(e.getMessage().contains("El nombre del cliente no puede estar vacío"));
+        verify(clienteDao, never()).save(any());
+    }
+
+    ////////////////////////////////////////
+    // 4) Agregar cuenta con cuenta nula
+    ////////////////////////////////////////
+    @Test
+    public void testAgregarCuenta_NullCuenta() throws TipoCuentaAlreadyExistsException {
+        // Llamamos a agregarCuenta con cuenta=null
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+                clienteService.agregarCuenta(null, 26456439)
+        );
+        assertTrue(e.getMessage().contains("La cuenta no puede ser nula"));
+        verify(clienteDao, never()).save(any());
+    }
+
+    ////////////////////////////////////////
+    // 5) Agregar cuenta a cliente con DNI inválido
+    ////////////////////////////////////////
+    @Test
+    public void testAgregarCuenta_DniInvalido() throws TipoCuentaAlreadyExistsException {
+        // DNI <= 0 => excepción
+        Cuenta cuenta = new Cuenta();
+        cuenta.setTipoCuenta(TipoCuenta.CAJA_AHORRO);
+        cuenta.setMoneda(TipoMoneda.PESOS);
+
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+                clienteService.agregarCuenta(cuenta, 0)
+        );
+        assertTrue(e.getMessage().contains("El DNI del titular debe ser mayor a 0"));
+        verify(clienteDao, never()).find(anyLong(), anyBoolean());
+    }
+
 }

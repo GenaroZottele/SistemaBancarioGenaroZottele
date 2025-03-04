@@ -1,5 +1,6 @@
 package ar.edu.utn.frbb.tup.persistence.entity;
 
+import ar.edu.utn.frbb.tup.model.TipoMoneda;
 import java.time.LocalDateTime;
 
 public class TransferEntity {
@@ -9,6 +10,7 @@ public class TransferEntity {
     private Double monto;
     private LocalDateTime transferDate;
     private String descripcion;
+    private TipoMoneda moneda;
 
     // Getters and Setters
     public Long getId() {
@@ -57,5 +59,13 @@ public class TransferEntity {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public TipoMoneda getMoneda() {
+        return moneda;
+    }
+
+    public void setMoneda(TipoMoneda moneda) {
+        this.moneda = moneda;
     }
 }
