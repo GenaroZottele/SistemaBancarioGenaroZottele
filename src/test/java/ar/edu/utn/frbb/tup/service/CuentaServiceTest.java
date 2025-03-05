@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@ExtendWith(MockitoExtension.class)
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CuentaServiceTest {
@@ -72,6 +72,9 @@ public class CuentaServiceTest {
         cuenta.setTipoCuenta(TipoCuenta.CAJA_AHORRO);
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500000);
+        Cliente clienteMock = new Cliente();
+        clienteMock.setDni(12345678L);
+        when(clienteService.buscarClientePorDni(12345678L)).thenReturn(clienteMock);
 
         doThrow(TipoCuentaAlreadyExistsException.class).when(clienteService).agregarCuenta(cuenta, 12345678);
 
@@ -88,6 +91,10 @@ public class CuentaServiceTest {
 
         when(cuentaDao.find(4L)).thenReturn(null);
         doNothing().when(clienteService).agregarCuenta(cuenta, 12345678);
+        Cliente clienteMock = new Cliente();
+        clienteMock.setDni(12345678L);
+        when(clienteService.buscarClientePorDni(12345678L)).thenReturn(clienteMock);
+
 
         cuentaService.darDeAltaCuenta(cuenta, 12345678);
 
@@ -188,9 +195,7 @@ public class CuentaServiceTest {
         verify(cuentaDao, never()).save(any(Cuenta.class));
 }
 
-    ///////////////////////////////////////
-    // 2) Test darDeAltaCuenta con moneda nula
-    ///////////////////////////////////////
+    //Test darDeAltaCuenta con moneda nula
     @Test
     public void testDarDeAltaCuenta_MonedaNula() {
         // Creamos una cuenta sin moneda
@@ -207,9 +212,7 @@ public class CuentaServiceTest {
         verify(cuentaDao, never()).save(any(Cuenta.class));
     }
 
-    ///////////////////////////////////////
-    // 3) Test findCuentaById con ID inválido
-    ///////////////////////////////////////
+    //Test findCuentaById con ID inválido
     @Test
     public void testFindCuentaById_IdInvalido() {
         // ID = 0 o negativo => Excepción
@@ -220,9 +223,7 @@ public class CuentaServiceTest {
         verify(cuentaDao, never()).find(anyLong());
     }
 
-    ///////////////////////////////////////
-    // 4) Test getCuentasByCliente con DNI inválido
-    ///////////////////////////////////////
+    //Test getCuentasByCliente con DNI inválido
     @Test
     public void testGetCuentasByCliente_DniInvalido() {
         // dni = 0 => excepción
@@ -234,9 +235,7 @@ public class CuentaServiceTest {
         verify(cuentaDao, never()).getCuentasByCliente(anyLong());
     }
 
-    ///////////////////////////////////////
-    // 5) Test agregarBalance con ID inválido
-    ///////////////////////////////////////
+    //Test agregarBalance con ID inválido
     @Test
     public void testAgregarBalance_IdInvalido() {
         // Si el ID de la cuenta es <= 0 => excepción
@@ -246,5 +245,6 @@ public class CuentaServiceTest {
         assertTrue(e.getMessage().contains("El ID de la cuenta debe ser mayor a 0"));
         verify(cuentaDao, never()).agregarBalance(anyLong(), anyInt());
     }
+
 }
 

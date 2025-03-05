@@ -6,6 +6,8 @@ import ar.edu.utn.frbb.tup.model.exception.NoAlcanzaException;
 import java.time.LocalDateTime;
 import java.util.Random;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 public class Cuenta {
     private long numeroCuenta;
     private LocalDateTime fechaCreacion;
@@ -22,14 +24,19 @@ public class Cuenta {
         this.fechaCreacion = LocalDateTime.now();
     }
 
+    @JsonBackReference
     public Cliente getTitular() {
         return titular;
     }
 
+
     public void setTitular(Cliente titular) {
         this.titular = titular;
+        if (titular != null) {
+            this.dniTitular = titular.getDni();  // Se actualiza el dniTitular
+        }
     }
-
+    
 
     public TipoCuenta getTipoCuenta() {
         return tipoCuenta;

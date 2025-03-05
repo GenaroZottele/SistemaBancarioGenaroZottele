@@ -17,7 +17,9 @@ public enum TipoPersona {
 
     public static TipoPersona fromString(String text) {
         for (TipoPersona tipo : TipoPersona.values()) {
-            if (tipo.descripcion.equalsIgnoreCase(text)) {
+            // Se verifica si el texto coincide con la descripción (ej: "F" o "J")
+            // o con el nombre de la constante (ej: "PERSONA_FISICA").
+            if (tipo.descripcion.equalsIgnoreCase(text) || tipo.name().equalsIgnoreCase(text)) {
                 return tipo;
             }
         }

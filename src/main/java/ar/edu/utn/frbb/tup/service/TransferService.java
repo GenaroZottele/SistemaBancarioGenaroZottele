@@ -47,7 +47,7 @@ public class TransferService {
             throw new IllegalArgumentException("La cuenta de destino debe ser un ID válido (>0)");
         }
         if (origen.equals(destino)) {
-            throw new IllegalArgumentException("La cuenta de origen y destino no pueden ser la misma");
+            throw new IllegalArgumentException("No se permite transferir entre la misma cuenta (mismo origen y destino)");
         }
         if (monto == null || monto <= 0) {
             throw new IllegalArgumentException("El monto a transferir debe ser mayor a 0");
@@ -59,16 +59,19 @@ public class TransferService {
             throw new IllegalArgumentException("La moneda no puede ser nula");
         }
         
-        // 1) Buscar cuentas
+        //Buscar cuentas
         Cuenta cuentaOrigen = cuentaService.findCuentaById(origen);
         Cuenta cuentaDestino = cuentaService.findCuentaById(destino);
 
-        // 2) Validaciones
+        //Validaciones
         if (cuentaOrigen == null) {
             throw new IllegalArgumentException("La cuenta de origen no existe: " + origen);
         }
         if (cuentaDestino == null) {
             throw new IllegalArgumentException("La cuenta destino no existe en nuestro banco: " + destino);
+        }
+        if (origen.equals(destino)) {
+            throw new IllegalArgumentException("La cuenta de origen y destino no pueden ser la misma");
         }
         // Verificar moneda
         if (cuentaOrigen.getMoneda() != cuentaDestino.getMoneda()) {
@@ -79,7 +82,7 @@ public class TransferService {
             throw new IllegalArgumentException("La moneda del request no coincide con la moneda de la cuenta origen");
         }
 
-        // 3) Calcular la comisión si corresponde
+        //Calcular la comisión si corresponde
         double comision = 0.0;
         if (moneda == TipoMoneda.PESOS && monto > 1000000) {
             comision = monto * 0.02; // 2%
@@ -88,12 +91,12 @@ public class TransferService {
         }
         double totalADebitar = monto + comision;
 
-        // 4) Verificar saldo suficiente en cuentaOrigen
+        //Verificar saldo suficiente en cuentaOrigen
         if (cuentaOrigen.getBalance() < totalADebitar) {
             throw new IllegalArgumentException("Fondos insuficientes en la cuenta origen");
         }
 
-        // 5) Actualizar saldos
+        //Actualizar saldos
         int debit = (int)Math.round(totalADebitar);
         int credit = (int)Math.round(monto);
 
@@ -107,12 +110,12 @@ public class TransferService {
         int nuevoBalanceDestino = cuentaDestino.getBalance() + credit;
         cuentaDestino.setBalance(nuevoBalanceDestino);
 
-        // 6) Persistimos los cambios en el "Dao" (para que no se pierdan)
+        //Persistimos los cambios en el "Dao" (para que no se pierdan)
         CuentaDao cuentaDao = new CuentaDao();
         cuentaDao.save(cuentaOrigen);
         cuentaDao.save(cuentaDestino);
 
-        // 7) Construir la TransferEntity y guardarla
+        //Construir la TransferEntity y guardarla
         TransferEntity transfer = new TransferEntity();
         transfer.setId(System.currentTimeMillis()); // o un generador de ID
         transfer.setOrigen(origen);
@@ -124,7 +127,7 @@ public class TransferService {
 
         transferDao.save(transfer);
 
-        // 8) Retornar la TransferEntity resultante
+        //Retornar la TransferEntity resultante
         return transfer;
     }
 

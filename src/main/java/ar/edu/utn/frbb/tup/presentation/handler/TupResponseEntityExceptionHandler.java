@@ -1,6 +1,8 @@
 package ar.edu.utn.frbb.tup.presentation.handler;
 
+import ar.edu.utn.frbb.tup.model.exception.CuentaAlreadyExistsException;
 import ar.edu.utn.frbb.tup.model.exception.TipoCuentaAlreadyExistsException;
+import ar.edu.utn.frbb.tup.model.exception.TipoCuentaNotSupportedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -14,40 +16,44 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class TupResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value
-            = {TipoCuentaAlreadyExistsException.class, IllegalArgumentException.class})
-    protected ResponseEntity<Object> handleMateriaNotFound(
-            Exception ex, WebRequest request) {
-        String exceptionMessage = ex.getMessage();
+    // Manejador para excepciones de tipo CuentaAlreadyExistsException,
+    // TipoCuentaNotSupportedException y IllegalArgumentException (BAD REQUEST)
+    @ExceptionHandler({
+        CuentaAlreadyExistsException.class,
+        TipoCuentaNotSupportedException.class,
+        IllegalArgumentException.class
+    })
+    protected ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest request) {
         CustomApiError error = new CustomApiError();
-        error.setErrorMessage(exceptionMessage);
-        return handleExceptionInternal(ex, error,
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        error.setErrorMessage(ex.getMessage());
+        return handleExceptionInternal(ex, error, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value
-            = { IllegalStateException.class })
-    protected ResponseEntity<Object> handleConflict(
-            RuntimeException ex, WebRequest request) {
-        String exceptionMessage = ex.getMessage();
+    // Manejador exclusivo para TipoCuentaAlreadyExistsException (Conflict)
+    @ExceptionHandler(TipoCuentaAlreadyExistsException.class)
+    protected ResponseEntity<Object> handleTipoCuentaAlreadyExists(TipoCuentaAlreadyExistsException ex, WebRequest request) {
+        CustomApiError error = new CustomApiError();
+        error.setErrorMessage(ex.getMessage());
+        return handleExceptionInternal(ex, error, new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    // Manejador para IllegalStateException (por ejemplo, para recursos no encontrados)
+    @ExceptionHandler(IllegalStateException.class)
+    protected ResponseEntity<Object> handleConflict(IllegalStateException ex, WebRequest request) {
         CustomApiError error = new CustomApiError();
         error.setErrorCode(1234);
-        error.setErrorMessage(exceptionMessage);
-        return handleExceptionInternal(ex, error,
-                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+        error.setErrorMessage(ex.getMessage());
+        return handleExceptionInternal(ex, error, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-
-
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body,
+                                                             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         if (body == null) {
             CustomApiError error = new CustomApiError();
             error.setErrorMessage(ex.getMessage());
             body = error;
         }
-
         return new ResponseEntity<>(body, headers, status);
     }
-
 }

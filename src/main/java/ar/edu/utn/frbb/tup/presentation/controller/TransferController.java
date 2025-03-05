@@ -1,6 +1,5 @@
 package ar.edu.utn.frbb.tup.presentation.controller;
 
-import ar.edu.utn.frbb.tup.model.TipoMoneda;
 import ar.edu.utn.frbb.tup.persistence.entity.TransferEntity;
 import ar.edu.utn.frbb.tup.presentation.dto.TransferDto;
 import ar.edu.utn.frbb.tup.presentation.dto.TransferResponseDto;
@@ -36,8 +35,7 @@ public class TransferController {
             response.setMensaje("Error: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
-}
-
+    }
 
     @GetMapping("/movements/{id}")
     public List<TransferEntity> getMovements(@PathVariable Long id) {

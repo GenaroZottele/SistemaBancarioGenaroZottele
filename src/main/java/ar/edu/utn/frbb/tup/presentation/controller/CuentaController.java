@@ -2,10 +2,11 @@ package ar.edu.utn.frbb.tup.presentation.controller;
 
 import ar.edu.utn.frbb.tup.model.Cuenta;
 import ar.edu.utn.frbb.tup.model.exception.CuentaAlreadyExistsException;
+import ar.edu.utn.frbb.tup.model.exception.TipoCuentaNotSupportedException;
 import ar.edu.utn.frbb.tup.model.exception.TipoCuentaAlreadyExistsException;
-import ar.edu.utn.frbb.tup.presentation.dto.CuentaDto;
 import ar.edu.utn.frbb.tup.service.CuentaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,14 +18,25 @@ public class CuentaController {
 
     @Autowired
     private CuentaService cuentaService;
+
     @PostMapping("/{dni}")
-    public Cuenta crearCuenta(@RequestBody Cuenta cuenta, @PathVariable long dni) throws TipoCuentaAlreadyExistsException, CuentaAlreadyExistsException {
-        cuentaService.darDeAltaCuenta(cuenta, dni);
-        return cuenta;
+    public ResponseEntity<?> crearCuenta(@RequestBody Cuenta cuenta, @PathVariable long dni) {
+        try {
+            Cuenta nuevaCuenta = cuentaService.darDeAltaCuenta(cuenta, dni);
+            return ResponseEntity.ok(nuevaCuenta);
+        } catch (TipoCuentaAlreadyExistsException | CuentaAlreadyExistsException | TipoCuentaNotSupportedException e) {
+            // Si ocurre alguna de estas excepciones, se devuelve 400 Bad Request con el mensaje del error
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            // Para cualquier otro error se devuelve 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear la cuenta: " + e.getMessage());
+        }
     }
-    // Endpoint para agregar balance a una cuenta
+
     @PostMapping("/{id}/agregar-balance")
     public ResponseEntity<String> agregarBalance(@PathVariable long id, @RequestParam int monto) {
+        // En este endpoint podemos seguir usando try/catch si se desea enviar mensajes personalizados
         try {
             cuentaService.agregarBalance(id, monto);
             return ResponseEntity.ok("Balance agregado exitosamente a la cuenta con ID: " + id);
@@ -34,7 +46,7 @@ public class CuentaController {
             return ResponseEntity.status(500).body("Error al agregar balance: " + e.getMessage());
         }
     }
-    // Endpoint para buscar una cuenta por ID
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findCuentaById(@PathVariable long id) {
         try {
@@ -46,7 +58,7 @@ public class CuentaController {
             return ResponseEntity.status(500).body("Error al buscar la cuenta: " + e.getMessage());
         }
     }
-    // Endpoint para obtener cuentas por DNI del cliente
+
     @GetMapping("/cliente/{dni}")
     public ResponseEntity<?> getCuentasByCliente(@PathVariable long dni) {
         try {
@@ -58,5 +70,4 @@ public class CuentaController {
             return ResponseEntity.status(500).body("Error al obtener cuentas del cliente: " + e.getMessage());
         }
     }
-
 }

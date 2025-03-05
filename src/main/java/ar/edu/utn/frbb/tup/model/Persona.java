@@ -1,5 +1,6 @@
 package ar.edu.utn.frbb.tup.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -7,9 +8,13 @@ public class Persona {
     private String nombre;
     private String apellido;
     private long dni;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
 
     public Persona() {}
+
+    // Constructor que espera la fecha como String y la parsea a LocalDate
     public Persona(long dni, String apellido, String nombre, String fechaNacimiento) {
         this.dni = dni;
         this.apellido = apellido;
@@ -17,6 +22,7 @@ public class Persona {
         this.fechaNacimiento = LocalDate.parse(fechaNacimiento);
     }
 
+    // Getters y setters
     public String getNombre() {
         return nombre;
     }

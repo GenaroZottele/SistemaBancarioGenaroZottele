@@ -33,7 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
+@ExtendWith(MockitoExtension.class)
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ClienteServiceTest {
@@ -53,12 +53,15 @@ public class ClienteServiceTest {
     public void testClienteMenor18Años() {
         ClienteDto clienteMenorDeEdad = new ClienteDto();
         clienteMenorDeEdad.setFechaNacimiento("2020-03-18");
+        clienteMenorDeEdad.setTipoPersona(TipoPersona.PERSONA_FISICA.toString());
         assertThrows(IllegalArgumentException.class, () -> clienteService.darDeAltaCliente(clienteMenorDeEdad));
     }
 
     @Test
     public void testClienteSuccess() throws ClienteAlreadyExistsException {
         ClienteDto cliente = new ClienteDto();
+        cliente.setNombre("Pepe");
+        cliente.setApellido("Rino");
         cliente.setFechaNacimiento("1978-03-18");
         cliente.setDni(29857643);
         cliente.setTipoPersona(TipoPersona.PERSONA_FISICA.toString());
@@ -195,9 +198,11 @@ public class ClienteServiceTest {
     @Test
     public void testClienteJusto18Anios() throws ClienteAlreadyExistsException {
         // Si hoy es 2025-01-01, una persona nacida en 2007-01-01 cumpliría recién 18. 
-        // Ajusta la fecha según tu lógica
         ClienteDto clienteMayor = new ClienteDto();
+        clienteMayor.setNombre("Juan");
+        clienteMayor.setApellido("Perez");
         clienteMayor.setDni(123);
+        clienteMayor.setTipoPersona(TipoPersona.PERSONA_FISICA.toString());
         clienteMayor.setFechaNacimiento("2005-02-27"); // simula que hoy cumple 20, ajusta la fecha al test real
 
         // Asumimos no existe
@@ -208,9 +213,7 @@ public class ClienteServiceTest {
         verify(clienteDao, times(1)).save(any(Cliente.class));
     }
 
-    ////////////////////////////////////////
-    // 1) Dar de alta cliente con null
-    ////////////////////////////////////////
+    //Dar de alta cliente con null
     @Test
     public void testDarDeAltaCliente_NullDto() {
         // Si pasamos null como clienteDto, esperamos que lance IllegalArgumentException
@@ -222,9 +225,7 @@ public class ClienteServiceTest {
         verify(clienteDao, never()).save(any());
     }
 
-    ////////////////////////////////////////
-    // 2) Dar de alta cliente con DNI inválido
-    ////////////////////////////////////////
+    //Dar de alta cliente con DNI inválido
     @Test
     public void testDarDeAltaCliente_DniInvalido() {
         // Creamos un ClienteDto con DNI <= 0
@@ -239,12 +240,9 @@ public class ClienteServiceTest {
         verify(clienteDao, never()).save(any());
     }
 
-    ////////////////////////////////////////
-    // 3) Dar de alta cliente con nombre vacío
-    ////////////////////////////////////////
+    //Dar de alta cliente con nombre vacío
     @Test
     public void testDarDeAltaCliente_NombreVacio() {
-        // Asumimos que tu lógica chequea nombre / apellido vacíos
         ClienteDto clienteDto = new ClienteDto();
         clienteDto.setDni(123456);
         clienteDto.setNombre("   ");  // nombre vacío
@@ -258,9 +256,7 @@ public class ClienteServiceTest {
         verify(clienteDao, never()).save(any());
     }
 
-    ////////////////////////////////////////
-    // 4) Agregar cuenta con cuenta nula
-    ////////////////////////////////////////
+    //Agregar cuenta con cuenta nula
     @Test
     public void testAgregarCuenta_NullCuenta() throws TipoCuentaAlreadyExistsException {
         // Llamamos a agregarCuenta con cuenta=null
@@ -271,9 +267,7 @@ public class ClienteServiceTest {
         verify(clienteDao, never()).save(any());
     }
 
-    ////////////////////////////////////////
-    // 5) Agregar cuenta a cliente con DNI inválido
-    ////////////////////////////////////////
+    //Agregar cuenta a cliente con DNI inválido
     @Test
     public void testAgregarCuenta_DniInvalido() throws TipoCuentaAlreadyExistsException {
         // DNI <= 0 => excepción
@@ -287,5 +281,19 @@ public class ClienteServiceTest {
         assertTrue(e.getMessage().contains("El DNI del titular debe ser mayor a 0"));
         verify(clienteDao, never()).find(anyLong(), anyBoolean());
     }
+    @Test
+    void testDarDeAltaCliente_ApellidoVacio() {
+        ClienteDto dto = new ClienteDto();
+        dto.setDni(123);
+        dto.setNombre("Juan");
+        dto.setApellido("   ");
+        dto.setFechaNacimiento("1990-01-01");
+        dto.setTipoPersona("F");
+        
+        Exception e = assertThrows(IllegalArgumentException.class, () -> clienteService.darDeAltaCliente(dto));
+        assertTrue(e.getMessage().contains("El apellido del cliente no puede estar vacío"));
+        verify(clienteDao, never()).save(any());
+    }
+
 
 }
